@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Models\Config;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
-use Validator;
 
 class AppServiceProvider extends ServiceProvider
 {

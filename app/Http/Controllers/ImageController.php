@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Config;
 use App\Models\Image;
-use App\Models\User;
-use Arr;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 

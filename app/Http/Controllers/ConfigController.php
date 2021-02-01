@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Config;
 use App\Models\Image;
 use App\Models\User;
-use Arr;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
 
 class ConfigController extends Controller
@@ -68,7 +68,7 @@ class ConfigController extends Controller
 
         $config->saveOrFail();
 
-        return response()->json(['status' => true]);
+        return response()->json(['status' => 'success']);
     }
 
     /**
@@ -87,7 +87,7 @@ class ConfigController extends Controller
         $search = implode('%', array_filter(explode(' ', $request->q)));
 
         return response()->json([
-            'status' => true,
+            'status' => 'success',
             'data'   => Config::query()
                 ->where('name', 'like', "%{$search}%")
                 ->limit(500)

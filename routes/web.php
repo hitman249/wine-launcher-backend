@@ -17,6 +17,10 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+$router->post('/test', function () use ($router) {
+    return response()->json(['status' => 'success', 'data' => $_POST]);
+});
+
 $router->get('/migrate', function () use ($router) {
     \Artisan::call('migrate', ['--path' => 'app/migrations', '--force' => true]);
 });
