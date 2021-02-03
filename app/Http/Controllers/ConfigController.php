@@ -68,7 +68,28 @@ class ConfigController extends Controller
 
         $config->saveOrFail();
 
-        return response()->json(['status' => 'success']);
+        return response()->json(['status' => 'success', 'data' => $config]);
+    }
+
+    /**
+     * @param Request $request
+     * @param int     $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ValidationException
+     */
+    public function update(Request $request, $id)
+    {
+        $config = Config::find($id);
+
+        $this->authorize('config-update', $config);
+
+        $this->validate($request, [
+            'config'     => 'required|game_config',
+            'icon'       => 'sometimes|mimes:png',
+            'background' => 'sometimes|mimes:jpeg,png',
+        ]);
+
+        return response()->json(['status' => 'success', 'data' => $config]);
     }
 
     /**
@@ -84,7 +105,7 @@ class ConfigController extends Controller
             'q' => 'required',
         ]);
 
-        $search = implode('%', array_filter(explode(' ', $request->q)));
+        $search = implode('%', prepare_name($request->q));
 
         return response()->json([
             'status' => 'success',

@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 
 /**
  * @property int    $id
+ * @property int    $user_id
  * @property int    $parent_id
  * @property string $md5
  * @property string $mime
@@ -44,6 +45,7 @@ class Image extends Model
      */
     protected $casts = [
         'id'         => 'integer',
+        'user_id'    => 'integer',
         'parent_id'  => 'integer',
         'md5'        => 'string',
         'mime'       => 'string',
@@ -92,6 +94,7 @@ class Image extends Model
 
         $createChild = static function (Image $model) {
             $child            = new self;
+            $child->user_id   = request()->user()->id;
             $child->parent_id = $model->id;
             $child->width     = $model->width;
             $child->height    = $model->height;
@@ -119,13 +122,14 @@ class Image extends Model
         /** @var \Intervention\Image\Image $image */
         $image = app('image')->make($path);
 
-        $model         = new self;
-        $model->width  = $image->width();
-        $model->height = $image->height();
-        $model->md5    = $md5;
-        $model->mime   = $image->mime();
-        $model->size   = $image->filesize();
-        $model->raw    = file_get_contents($path);
+        $model          = new self;
+        $model->user_id = 1;
+        $model->width   = $image->width();
+        $model->height  = $image->height();
+        $model->md5     = $md5;
+        $model->mime    = $image->mime();
+        $model->size    = $image->filesize();
+        $model->raw     = file_get_contents($path);
         $model->saveOrFail();
 
         return $createChild($model);

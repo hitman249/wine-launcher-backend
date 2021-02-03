@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @property int     $id
@@ -86,8 +86,15 @@ class Config extends Model
             throw new \Exception('User is not authorized');
         }
 
-        return $query
-            ->where('user_id', request()->user()->id)
-            ->where('name', $name);
+        $query->where('user_id', request()->user()->id);
+
+        $query->where(function ($query) use ($name) {
+            /** @var \Illuminate\Database\Eloquent\Builder $query */
+
+            $search = implode('%', prepare_name($name));
+            $query
+                ->where('name', $name)
+                ->orWhere('name', 'like', "%{$search}%");
+        });
     }
 }

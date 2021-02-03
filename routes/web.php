@@ -17,16 +17,14 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->post('/test', function () use ($router) {
-    return response()->json(['status' => 'success', 'data' => $_POST]);
-});
+$router->get('image/{id}.jpeg', ['uses' => 'ImageController@get']);
 
 $router->get('/migrate', function () use ($router) {
-    \Artisan::call('migrate', ['--path' => 'app/migrations', '--force' => true]);
+    \Illuminate\Support\Facades\Artisan::call('migrate', ['--path' => 'app/migrations', '--force' => true]);
 });
 
 $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
-    $router->get('config/create', ['uses' => 'ConfigController@create']);
+    $router->post('config/create', ['uses' => 'ConfigController@create']);
+    $router->post('config/update/{id}', ['uses' => 'ConfigController@update']);
+    $router->post('config/select', ['uses' => 'ConfigController@select']);
 });
-
-$router->get('image/{id}', ['uses' => 'ImageController@get']);

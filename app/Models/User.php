@@ -13,8 +13,7 @@ use Laravel\Lumen\Auth\Authorizable;
 /**
  * @property int    $id
  * @property string $name
- * @property string $signature
- * @property string $ip
+ * @property array  $hashes
  * @property Carbon $last_login_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -34,12 +33,26 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $connection = 'sqlite';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'id'            => 'integer',
+        'name'          => 'string',
+        'hashes'        => 'array',
+        'last_login_at' => 'datetime',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'signature',
+        'name', 'hashes',
     ];
 
     /**
@@ -47,5 +60,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      *
      * @var array
      */
-    protected $hidden = [];
+    protected $hidden = [
+        'hashes',
+    ];
 }

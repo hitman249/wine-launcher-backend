@@ -52,6 +52,12 @@ class AppServiceProvider extends ServiceProvider
             }
 
             $name = Arr::get($config, 'app.name');
+            $id   = (int)Arr::get($config, 'id');
+
+            /** @var Config $model */
+            if ($id && ($model = Config::find($id))) {
+                return request()->user()->id === $model->user_id;
+            }
 
             if (Config::query()->ofName($name)->count()) {
                 return false;

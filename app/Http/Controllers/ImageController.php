@@ -20,15 +20,17 @@ class ImageController extends Controller
 
     /**
      * @param Request $request
-     *
+     * @param int     $id
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     * @throws ValidationException
-     * @throws \Throwable
      */
     public function get(Request $request, $id)
     {
         /** @var Image $image */
         $image = Image::query()->where('id', $id)->first();
+
+        if (!$image) {
+            abort(404);
+        }
 
         return response()->make($image->getRaw(), 200, [
             'Content-Type'   => $image->mime,
