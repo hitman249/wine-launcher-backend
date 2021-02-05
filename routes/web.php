@@ -26,5 +26,11 @@ $router->get('/migrate', function () use ($router) {
 $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
     $router->post('config/create', ['uses' => 'ConfigController@create']);
     $router->post('config/update/{id}', ['uses' => 'ConfigController@update']);
+    $router->post('config/delete/{id}', ['uses' => 'ConfigController@delete']);
     $router->post('config/select', ['uses' => 'ConfigController@select']);
+
+    $router->post('like/config/{id}', ['uses' => 'LikeController@likeConfig']);
+    $router->post('unlike/config/{id}', ['uses' => 'LikeController@unlikeConfig']);
+    $router->post('like/image/{id}', ['uses' => 'LikeController@likeImage']);
+    $router->post('unlike/image/{id}', ['uses' => 'LikeController@unlikeImage']);
 });

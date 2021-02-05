@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Config;
+use App\Models\Image;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
@@ -77,12 +78,57 @@ class AuthServiceProvider extends ServiceProvider
 
     public function registerPolicies()
     {
-        Gate::define('config-update', static function (User $user, Config $config = null) {
-            if (!$config) {
-                return false;
-            }
+        $config = [
+            'config-update',
+            'config-delete',
+        ];
 
-            return $user->id === $config->user_id;
-        });
+        foreach ($config as $ability) {
+            Gate::define($ability, static function (User $user, Config $config = null) {
+                if (!$config) {
+                    return false;
+                }
+
+                if ($user->isAdmin()) {
+                    return true;
+                }
+
+                return $user->id === $config->user_id;
+            });
+        }
+
+        $like = [
+            'like-config',
+            'like-image',
+        ];
+
+        foreach ($like as $ability) {
+            Gate::define($ability, static function (User $user, $item = null) {
+                /** @var Config|Image $item */
+
+                if (!$item) {
+                    return false;
+                }
+
+                return $item->like()->where('likes.user_id', $user->id)->count() < 1;
+            });
+        }
+
+        $unlike = [
+            'unlike-config',
+            'unlike-image',
+        ];
+
+        foreach ($unlike as $ability) {
+            Gate::define($ability, static function (User $user, $item = null) {
+                /** @var Config|Image $item */
+
+                if (!$item) {
+                    return false;
+                }
+
+                return (bool)$item->like()->where('likes.user_id', $user->id)->count();
+            });
+        }
     }
 }

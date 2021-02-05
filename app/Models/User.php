@@ -14,6 +14,7 @@ use Laravel\Lumen\Auth\Authorizable;
  * @property int    $id
  * @property string $name
  * @property array  $hashes
+ * @property bool   $is_admin
  * @property Carbon $last_login_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -41,6 +42,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'id'            => 'integer',
         'name'          => 'string',
         'hashes'        => 'array',
+        'is_admin'      => 'boolean',
         'last_login_at' => 'datetime',
         'created_at'    => 'datetime',
         'updated_at'    => 'datetime',
@@ -63,4 +65,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $hidden = [
         'hashes',
     ];
+
+    /**
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
 }

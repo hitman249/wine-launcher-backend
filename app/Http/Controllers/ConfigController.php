@@ -76,20 +76,47 @@ class ConfigController extends Controller
      * @param int     $id
      * @return \Illuminate\Http\JsonResponse
      * @throws ValidationException
+     * @throws \Throwable
      */
     public function update(Request $request, $id)
     {
+        /** @var Config $config */
         $config = Config::find($id);
+
+        if (!$config && $id) {
+            return $this->create($request);
+        }
 
         $this->authorize('config-update', $config);
 
-        $this->validate($request, [
-            'config'     => 'required|game_config',
-            'icon'       => 'sometimes|mimes:png',
-            'background' => 'sometimes|mimes:jpeg,png',
-        ]);
+        $config->delete();
 
-        return response()->json(['status' => 'success', 'data' => $config]);
+        return $this->create($request);
+    }
+
+    /**
+     * @param Request $request
+     * @param int     $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ValidationException
+     * @throws \Throwable
+     */
+    public function delete(Request $request, $id)
+    {
+        /** @var Config $config */
+        $config = Config::find($id);
+
+        $this->authorize('config-delete', $config);
+
+        if (!$config) {
+            return response()->json(['status' => 'error']);
+        }
+
+        if ($config->delete()) {
+            return response()->json(['status' => 'success']);
+        }
+
+        return response()->json(['status' => 'error']);
     }
 
     /**
@@ -107,12 +134,26 @@ class ConfigController extends Controller
 
         $search = implode('%', prepare_name($request->q));
 
+        $items = Config::query()
+            ->with(['icon', 'background'])
+            ->where('name', 'like', "%{$search}%")
+            ->limit(100)
+            ->get()
+            ->map(static function (Config $item) {
+                if ($item->icon) {
+                    $item->icon_url = $item->icon->getBase64();
+                }
+
+                if ($item->background) {
+                    $item->background_url = $item->background->getBase64();
+                }
+
+                return $item;
+            });
+
         return response()->json([
             'status' => 'success',
-            'data'   => Config::query()
-                ->where('name', 'like', "%{$search}%")
-                ->limit(500)
-                ->get()
+            'data'   => $items->toArray(),
         ]);
     }
 }

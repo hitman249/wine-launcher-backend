@@ -10,6 +10,7 @@ use Illuminate\Support\Collection;
  * @property int    $id
  * @property int    $user_id
  * @property int    $parent_id
+ * @property int    $likes
  * @property string $md5
  * @property string $mime
  * @property int    $size
@@ -18,6 +19,7 @@ use Illuminate\Support\Collection;
  * @property string $raw
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property Like[] $like
  *
  * Class Image
  * @package App\Models
@@ -47,6 +49,7 @@ class Image extends Model
         'id'         => 'integer',
         'user_id'    => 'integer',
         'parent_id'  => 'integer',
+        'likes'      => 'integer',
         'md5'        => 'string',
         'mime'       => 'string',
         'size'       => 'integer',
@@ -79,6 +82,24 @@ class Image extends Model
     protected $hidden = [
         'raw',
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function like()
+    {
+        return $this->hasMany(Like::class, 'image_id', 'id');
+    }
+
+    /**
+     * @return bool
+     */
+    public function updateLikes(): bool
+    {
+        $this->likes = $this->like()->count();
+
+        return $this->save();
+    }
 
     /**
      * @param string $path
@@ -194,5 +215,16 @@ class Image extends Model
         }
 
         return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBase64(): string
+    {
+        $raw  = base64_encode($this->getRaw());
+        $mime = $this->mime;
+
+        return "data:{$mime};base64,{$raw}";
     }
 }

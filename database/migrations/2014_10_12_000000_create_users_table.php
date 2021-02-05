@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->index();
+            $table->boolean('is_admin')->default(false);
             $table->json('hashes')
                 ->comment('Нужно как-то индентифицировать пользователей, чтобы они могли удалять или обновлять свои записи.');
             $table->timestamp('last_login_at')->nullable();
@@ -26,6 +27,7 @@ class CreateUsersTable extends Migration
         $user                = new User();
         $user->hashes        = [];
         $user->name          = 'admin';
+        $user->is_admin      = true;
         $user->last_login_at = \Carbon\Carbon::now();
         $user->save();
     }

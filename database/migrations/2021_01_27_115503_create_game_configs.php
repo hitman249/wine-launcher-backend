@@ -18,6 +18,7 @@ class CreateGameConfigs extends Migration
             $table->timestamps();
             $table->boolean('active')->default(false);
             $table->integer('sort')->default(500);
+            $table->integer('likes')->default(0);
             $table->string('name');
             $table->string('version');
             $table->json('config');

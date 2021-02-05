@@ -23,6 +23,7 @@ class CreateFileStorage extends Migration
             $table->integer('width')->nullable()->comment('Ширина');
             $table->integer('height')->nullable()->comment('Высота');
             $table->binary('raw')->nullable();
+            $table->integer('likes')->default(0);
 
             $table->unsignedBigInteger('user_id')->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
