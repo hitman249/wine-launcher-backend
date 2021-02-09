@@ -97,8 +97,15 @@ class Config extends Model
     protected $hidden = [
         'icon',
         'background',
-        'like',
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne|\Illuminate\Database\Eloquent\Builder
+     */
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne|\Illuminate\Database\Eloquent\Builder

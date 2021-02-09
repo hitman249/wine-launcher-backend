@@ -129,31 +129,56 @@ class ConfigController extends Controller
     public function select(Request $request)
     {
         $this->validate($request, [
-            'q' => 'required',
+            'q'       => 'sometimes',
+            'page'    => 'sometimes|integer',
+            'user_id' => 'sometimes|integer',
         ]);
 
-        $search = implode('%', prepare_name($request->q));
+        $userId = (int)$request->user_id;
+        $with   = [
+            'icon',
+            'background',
+            'user',
+        ];
 
-        $items = Config::query()
-            ->with(['icon', 'background'])
-            ->where('name', 'like', "%{$search}%")
-            ->limit(100)
-            ->get()
-            ->map(static function (Config $item) {
-                if ($item->icon) {
-                    $item->icon_url = $item->icon->getBase64();
-                }
+        $with['like'] = function ($query) use ($request) {
+            /** @var \Illuminate\Database\Eloquent\Relations\HasMany $query */
+            $query->where('user_id', $request->user()->id);
+        };
 
-                if ($item->background) {
-                    $item->background_url = $item->background->getBase64();
-                }
+        $search = $request->q ? implode('%', prepare_name($request->q)) : '';
+        $query  = Config::query()->with($with);
 
-                return $item;
-            });
+        if ($search) {
+            $query
+                ->orderByDesc('likes')
+                ->where('name', 'like', "%{$search}%");
+        } else {
+            $query->orderByDesc('id');
+        }
+
+        if ($userId) {
+            $query->where('user_id', $userId);
+        }
+
+        $items = $query->paginate($page_size = 4);
+
+        foreach ($items->items() as $item) {
+            if ($item->icon) {
+                $item->icon_url = $item->icon->getBase64();
+            }
+
+            if ($item->background) {
+                $item->background_url = $item->background->getBase64();
+            }
+        }
+
+        $data              = $items->toArray();
+        $data['page_size'] = $page_size;
 
         return response()->json([
             'status' => 'success',
-            'data'   => $items->toArray(),
+            'data'   => $data,
         ]);
     }
 }

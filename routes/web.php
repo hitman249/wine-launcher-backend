@@ -19,11 +19,17 @@ $router->get('/', function () use ($router) {
 
 $router->get('image/{id}.jpeg', ['uses' => 'ImageController@get']);
 
+$router->get('check', function () {
+    return '';
+});
+
 $router->get('/migrate', function () use ($router) {
     \Illuminate\Support\Facades\Artisan::call('migrate', ['--path' => 'app/migrations', '--force' => true]);
 });
 
 $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
+    $router->post('user', ['uses' => 'UserController@get']);
+
     $router->post('config/create', ['uses' => 'ConfigController@create']);
     $router->post('config/update/{id}', ['uses' => 'ConfigController@update']);
     $router->post('config/delete/{id}', ['uses' => 'ConfigController@delete']);
