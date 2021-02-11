@@ -42,7 +42,6 @@ class AppServiceProvider extends ServiceProvider
                 'app.exe',
                 'app.path',
                 'app.version',
-                'app.icon_height',
             ];
 
             foreach ($checkEmpty as $key) {

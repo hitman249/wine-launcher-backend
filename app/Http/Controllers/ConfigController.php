@@ -50,7 +50,22 @@ class ConfigController extends Controller
             $file = $request->file('icon');
 
             try {
-                $image           = (new Image)->createFileByPath($file->getRealPath());
+                /** @var \Intervention\Image\Image $image */
+                $image = app('image')->make($file->getRealPath());
+                $image->resize(256, 256, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+
+                $path = sys_get_temp_dir() . '/icon.png';
+
+                if (file_exists($path)) {
+                    @unlink($path);
+                }
+
+                $image->save($path);
+                $image->destroy();
+
+                $image           = (new Image)->createFileByPath($path);
                 $config->icon_id = $image->id;
             } catch (\Exception $exception) {
             }
@@ -60,7 +75,22 @@ class ConfigController extends Controller
             $file = $request->file('background');
 
             try {
-                $image                 = (new Image)->createFileByPath($file->getRealPath());
+                /** @var \Intervention\Image\Image $image */
+                $image = app('image')->make($file->getRealPath());
+                $image->resize(1280, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+
+                $path = sys_get_temp_dir() . '/background.jpg';
+
+                if (file_exists($path)) {
+                    @unlink($path);
+                }
+
+                $image->save($path);
+                $image->destroy();
+
+                $image                 = (new Image)->createFileByPath($path);
                 $config->background_id = $image->id;
             } catch (\Exception $exception) {
             }
