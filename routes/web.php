@@ -14,7 +14,10 @@
 */
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    return view('hello', [
+        'siteName' => env('APP_NAME'),
+        'siteUrl'  => env('APP_URL'),
+    ]);
 });
 
 $router->get('image/{id}.jpeg', ['uses' => 'ImageController@get']);
