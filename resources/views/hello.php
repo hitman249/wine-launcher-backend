@@ -58,7 +58,7 @@
         <div class="row">
             <div class="hero-right  col-sm-4 ">
                 <h3 class="header-headline">
-                    Open Source software for play games on Linux
+                    Open Source software to play games on Linux
                 </h3>
                 <br>
                 <div class="header-running-text light">
