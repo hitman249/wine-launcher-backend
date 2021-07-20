@@ -37,9 +37,9 @@ class AuthServiceProvider extends ServiceProvider
         $this->app['auth']->viaRequest('api', function (Request $request) {
             $user   = $request->input('user');
             $hashes = $request->input('hashes');
+            $hashes = $hashes ? array_filter(is_array($hashes) ? $hashes : json_decode($hashes, true, 512, JSON_THROW_ON_ERROR)) : null;
 
             if ($user && $hashes) {
-                $hashes = is_array($hashes) ? $hashes : json_decode($hashes, true);
                 /** @var User $result */
                 $result = User::query()
                     ->where('name', $user)
